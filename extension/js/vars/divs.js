@@ -123,10 +123,3 @@ var divs = {
     }
   ]
 };
-
-// urls = [
-//   "stackoverflow.com", "dailymail.co.uk", "mailonline.com", 
-//   "twitter.com", "twitter.com", "buzzfeed.com", "theguardian.com", 
-//   "youtube.com", "facebook.com"
-// ];
-

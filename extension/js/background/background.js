@@ -41,7 +41,7 @@ function initialise() {
   });
 }
 
-chrome.contextMenus.removeAll();
+/* chrome.contextMenus.removeAll();
 chrome.contextMenus.create({
   title: "Reset element hiding",
   contexts: ["browser_action"],
@@ -56,20 +56,10 @@ chrome.contextMenus.create({
       console.log(settingsLocal.divs);
       currentDivs[currentDomain] = divs[currentDomain];
       changeSetting(currentDivs, "divs");
-        // console.log(urls[i]); // WADU
-        // console.log(urls[i].includes(url));
-        //if (urls[i].includes(url) == true) { 
-        // console.log(urls[i]);
-        // console.log(urls[i].includes(url));
-        // false, probably due to it being 1 word.
         console.log('derparinos');
         //}
-
-      //console.log(divs[urls[7]][0]["hidden"]);
-      //divs[urls[7]][0]["hidden"] = true;
-      //console.log(divs[urls[7]][0]["hidden"]);
   }
-});
+}); Needs extra permissions, not a viable solution - will delete soon */ 
 
 
 

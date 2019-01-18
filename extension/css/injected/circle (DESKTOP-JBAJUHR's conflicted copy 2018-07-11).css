@@ -164,12 +164,6 @@
   .circle-show-always:hover {
     color: #ff61a7 !important; }
 
-.circle-reset {
-  cursor: pointer !important;
-  color: #bdbdbd !important; }
-  .circle-reset:hover {
-    color: #ff61a7 !important; }
-
 .circle-logo {
   margin-top: 0 !important;
   width: 40px !important;

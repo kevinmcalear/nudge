@@ -13,13 +13,11 @@ var pxPerLevel = 100;
 var showingContainer = false;
 var currentLevel = false;
 
-
 // Options set
 getSettings(execSettings);
 
 sendHTMLRequest(getUrl("html/injected/other/circle.html"), storeForUse);
 sendHTMLRequest(getUrl("html/injected/nudge/corner.html"), storeForUse);
-
 
 // The images that need caching
 var imagesToCache = [
@@ -214,9 +212,7 @@ function execSettings(settings) {
         // Do it a first time
         elHiderAndCircleAdder(settings.divs[key]);
         // Check the div is always covered
-        // keepAddingCircles(function() {
           setInterval(function() {console.log('asd'); elHiderAndCircleAdder(settings.divs[key])}, 1000);
-        // });
       }
     });
     // Array circle adder - also checks if circle exists
@@ -296,17 +292,6 @@ function makeUniqueSelector(element) {
   return selector;
 }
 
-function removeElement(elementId) {
-  // Removes an element from the document.
-  var element = document.getElementById(elementId);
-  element.parentNode.removeChild(element);
-  }
-
-// function createElement(elemntId) {
-//   var element = document.getElementById(elementId);
-//   element.createElement(element);
-// }
-
 function clickHandler(element, domain) {
   function findElementWithParent(className, clickCallback) {
     var elements = document.getElementsByClassName(className);
@@ -322,21 +307,19 @@ function clickHandler(element, domain) {
       }
     }
   }
+
   findElementWithParent("circle-show-once", function(container) {
     unHide(container, element, false);
   });
+
   findElementWithParent("circle-show-always", function(container) {
     unHide(container, element, true);
   });
 
   function unHide(container, element, showAlways) {
-    // console.log(container, element);
     deleteEl(container);
     var selector = makeUniqueSelector(element);
-    // console.log(element);
-    // console.log(selector);
     var hideStyle = el(`${selector}-hide-style`);
-    // console.log(hideStyle);
     deleteEl(hideStyle);
     for (var j = 0; j < divs[domain].length; j++) {
       var found = false;
@@ -357,45 +340,12 @@ function clickHandler(element, domain) {
       }
     }
   }
-
-  // 99% sure I should delete this
-
-  // function yesHide(container, element, showAlways) {
-  //   // console.log(container, element);
-  //   deleteEl(container);
-  //   var selector = makeUniqueSelector(element);
-  //   console.log(element);
-  //   console.log(selector);
-  //   var hideStyle = el(`${selector}-hide-style`);
-  //   console.log(hideStyle);
-  //   // createEl(element, "div", selector);
-  //   removeElement('related');
-  //   for (var j = 0; j < divs[domain].length; j++) {
-  //     var found = false;
-  //     var item = divs[domain][j];
-  //     document
-  //       .querySelectorAll(`[${item.type}="${item.name}"]`)
-  //       .forEach(function(hideElement) {
-  //         if (hideElement === element) {
-  //           divs[domain][j].hidden = false;
-  //           if (showAlways) {
-  //             changeSettingRequest(divs, "divs");
-  //           }
-  //           found = true;
-  //         }
-  //       });
-  //     if (found) {
-  //       break;
-  //     }
-  //   }
-  // }
 }
 
 function keepAddingCircles(callback) {
   var observer = new MutationObserver(function(mutations) {
     mutations.forEach(function(mutation) {
       for (var i = 0; i < mutation.addedNodes.length; i++) {
-        console.log('1');
         callback();
         if (turnOffObserver) {
           // console.log("Disconnected observer");
