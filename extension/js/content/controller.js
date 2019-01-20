@@ -4,6 +4,8 @@ var time = false;
 var increment = 300; // in seconds
 var minLevelMultiple = 1;
 var pxPerLevel = 100;
+var showAlwaysClickedAlready = false;
+var makeSure = 0;
 
 // For testing FIXME: make the labels show the correct values off a shared JSON?
 // increment = 30; // in seconds
@@ -31,6 +33,24 @@ var imagesToCache = [
   "icon/offswitch.svg",
   "icon/newcirclewhite.svg"
 ];
+
+function getAndUpdateSettings() {
+  // Get settings
+  chrome.storage.sync.get("settings", function(item) {
+    settingsLocal = item.settings;
+    // Update settings if don't exist
+    Object.keys(defaultSettings).forEach(function(key) {
+      if (isUndefined(item.settings[key])) {
+        console.log(`${key} not present in settings, will update with default`);
+        changeSetting(defaultSettings[key], key);
+      }
+    });
+    if (!settingsLocal.updated_divs) {
+      changeSetting(divs, "divs");
+      changeSetting(true, "updated_divs");
+    }
+  });
+}
 
 // Cache images
 imagesToCache.forEach(function(imageUrl) {
@@ -212,7 +232,7 @@ function execSettings(settings) {
         // Do it a first time
         elHiderAndCircleAdder(settings.divs[key]);
         // Check the div is always covered
-          setInterval(function() {console.log('asd'); elHiderAndCircleAdder(settings.divs[key])}, 1000);
+          setInterval(function() {elHiderAndCircleAdder(settings.divs[key])}, 1000);
       }
     });
     // Array circle adder - also checks if circle exists
@@ -313,8 +333,47 @@ function clickHandler(element, domain) {
   });
 
   findElementWithParent("circle-show-always", function(container) {
-    unHide(container, element, true);
+    
+      if(container.className === "circle-container hidden") {
+        document.querySelector('.circle-container.hidden').firstChild.firstChild.firstChild.childNodes[2].textContent = "Are you sure";
+        makeSure += 1;
+
+        document.querySelector('.circle-container.hidden').firstChild.firstChild.firstChild.childNodes[2].addEventListener('mouseleave', function() {
+          showAlwaysClickedAlready = false;
+          makeSure = 0;
+          setTimeout(() => {
+            document.querySelector('.circle-container.hidden').firstChild.firstChild.firstChild.childNodes[2].textContent = "Show Always"
+          }, 200);
+        }, true);
+    
+        if (makeSure >= 2) {
+        unHide(container, element, true);
+        }
+      }
+      else {
+        document.querySelector('.circle-show-always').textContent = "Are you sure?"
+
+        makeSure += 1;
+        
+        document.querySelector('.circle-show-always').addEventListener('mouseleave', function() {
+          showAlwaysClickedAlready = false;
+          makeSure = 0;
+          setTimeout(() => {
+            document.querySelector('.circle-show-always').textContent = "Show Always"
+          }, 200);
+        }, true);
+    
+        if (makeSure >= 2) {
+        unHide(container, element, true);
+        }
+      }
   });
+
+  findElementWithParent("circle-reset-settings", function(container) {
+    resetPage();
+  });
+ 
+
 
   function unHide(container, element, showAlways) {
     deleteEl(container);
@@ -340,6 +399,17 @@ function clickHandler(element, domain) {
       }
     }
   }
+
+  function resetPage() {
+    for (var i = 0; i < divs[domain].length; i++ ) {
+      if (!divs[domain][i].hidden) {
+        divs[domain][i].hidden = true;
+        makeSure = 0;
+        changeSettingRequest(divs, "divs");
+      }
+    }
+  }
+
 }
 
 function keepAddingCircles(callback) {

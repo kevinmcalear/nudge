@@ -170,6 +170,13 @@
   .circle-show-always:hover {
     color: #ff61a7; }
 
+.circle-reset-settings {
+  height: 10px;
+  cursor: pointer;
+  color: #bdbdbd; }
+  .circle-reset-settings:hover {
+    color: #ff61a7; }
+
 .circle-logo {
   margin-top: 0;
   width: 40px;
