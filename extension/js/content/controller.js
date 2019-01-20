@@ -331,13 +331,12 @@ function clickHandler(element, domain) {
   findElementWithParent("circle-show-once", function(container) {
     unHide(container, element, false);
   });
-
+  //Are you sure functionality below
+  
   findElementWithParent("circle-show-always", function(container) {
-    
       if(container.className === "circle-container hidden") {
         document.querySelector('.circle-container.hidden').firstChild.firstChild.firstChild.childNodes[2].textContent = "Are you sure";
         makeSure += 1;
-
         document.querySelector('.circle-container.hidden').firstChild.firstChild.firstChild.childNodes[2].addEventListener('mouseleave', function() {
           showAlwaysClickedAlready = false;
           makeSure = 0;
@@ -345,16 +344,13 @@ function clickHandler(element, domain) {
             document.querySelector('.circle-container.hidden').firstChild.firstChild.firstChild.childNodes[2].textContent = "Show Always"
           }, 200);
         }, true);
-    
         if (makeSure >= 2) {
         unHide(container, element, true);
         }
       }
       else {
         document.querySelector('.circle-show-always').textContent = "Are you sure?"
-
         makeSure += 1;
-        
         document.querySelector('.circle-show-always').addEventListener('mouseleave', function() {
           showAlwaysClickedAlready = false;
           makeSure = 0;
@@ -362,19 +358,17 @@ function clickHandler(element, domain) {
             document.querySelector('.circle-show-always').textContent = "Show Always"
           }, 200);
         }, true);
-    
         if (makeSure >= 2) {
         unHide(container, element, true);
         }
       }
   });
-
+  
+  // New Reset Page
   findElementWithParent("circle-reset-settings", function(container) {
     resetPage();
   });
- 
-
-
+  
   function unHide(container, element, showAlways) {
     deleteEl(container);
     var selector = makeUniqueSelector(element);
@@ -399,7 +393,7 @@ function clickHandler(element, domain) {
       }
     }
   }
-
+  
   function resetPage() {
     for (var i = 0; i < divs[domain].length; i++ ) {
       if (!divs[domain][i].hidden) {
@@ -409,7 +403,6 @@ function clickHandler(element, domain) {
       }
     }
   }
-
 }
 
 function keepAddingCircles(callback) {
