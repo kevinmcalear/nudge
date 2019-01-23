@@ -41,28 +41,6 @@ function initialise() {
   });
 }
 
-/* chrome.contextMenus.removeAll();
-chrome.contextMenus.create({
-  title: "Reset element hiding",
-  contexts: ["browser_action"],
-  onclick: function() {
-      var statusObj = open("status");
-      var currentDomain = statusObj.currentState.domain
-      var currentDivs = settingsLocal.divs
-      console.log(divs);
-      //console.log(url);
-      console.log(settingsLocal);
-      console.log(currentDomain);
-      console.log(settingsLocal.divs);
-      currentDivs[currentDomain] = divs[currentDomain];
-      changeSetting(currentDivs, "divs");
-        console.log('derparinos');
-        //}
-  }
-}); Needs extra permissions, not a viable solution - will delete soon */ 
-
-
-
 // Get settings from sync to settingsLocal, and run options page if asked for
 function getAndUpdateSettings() {
   // Get settings
