@@ -219,6 +219,7 @@ function execSettings(settings) {
   }
   // Init div_hider
   if (settings.div_hider) {
+
     // Add the CSS that you will need
     doAtEarliest(function() {
       addCSS("nudge-circle", "css/injected/circle.css");
@@ -232,7 +233,10 @@ function execSettings(settings) {
         // Do it a first time
         elHiderAndCircleAdder(settings.divs[key]);
         // Check the div is always covered
-          setInterval(function() {elHiderAndCircleAdder(settings.divs[key])}, 1000);
+        keepAddingCircles(function() {
+          // FIXME: how to deactivate it once it's not needed?
+          elHiderAndCircleAdder(settings.divs[key]);
+        });
       }
     });
     // Array circle adder - also checks if circle exists
@@ -242,24 +246,68 @@ function execSettings(settings) {
       array.forEach(function(item) {
         // If item is hidden
         if (item.hidden) {
-          hiddenCounter++;
           try {
-            document
-              .querySelectorAll(`[${item.type}="${item.name}"]`)
-              .forEach(element => {
-                // If no id, use classes
-                var selector = makeUniqueSelector(element);
-                // Check that the element is hidden by seeing if the hide style ID is present
-                if (!el(`${selector}-hide-style`)) {
+            // If it has an ID, get it by ID
+            if (item.type === "id") {
+              var element = document.getElementById(item.name);
+              if (element) {
+                processForCircle(element);
+              }
+              // If it has a class name, get it by className
+            } else if (item.type === "class") {
+              for (element of document.getElementsByClassName(item.name)) {
+                processForCircle(element);
+              }
+              // Else, reluctantly user querySelectorAll
+            } else {
+              document
+                .querySelectorAll(`[${item.type}="${item.name}"]`)
+                .forEach(element => {
+                  processForCircle(element);
+                  // Try to add a circle
+                  addCircle(element);
+                });
+            }
+
+            // The next step
+            function processForCircle(element) {
+              hiddenCounter++;
+              // Check that the element is hidden by seeing if the hide style ID is present
+              // This also checks for elements under the same class being hidden already
+              var hiderId = false;
+
+              if (item.type === "id") {
+                hiderId = `#${item.name}-hide-style`;
+                if (!el(hiderId)) {
+                  styleAdder(`#${item.name}`, elementHideStyle, hiderId);
+                }
+              } else if (item.type === "class") {
+                hiderId = `${item.name
+                  .replace(/(^|\s+)/g, "$1.")
+                  .replace(/\s/g, "")}-hide-style`;
+                if (!el(hiderId)) {
                   styleAdder(
-                    selector,
+                    `${item.name
+                      .replace(/(^|\s+)/g, "$1.")
+                      .replace(/\s/g, "")}`,
                     elementHideStyle,
-                    `${selector}-hide-style`
+                    hiderId
                   );
                 }
-                // Try to add a circle
-                addCircle(element);
-              });
+              } else if (element.id !== "") {
+                hiderId = `#${element.id}-hide-style`;
+                if (!el(`#${element.id}-hide-style`)) {
+                  styleAdder(`#${element.id}`, elementHideStyle, hiderId);
+                }
+              } else {
+                console.log("Can't hide this one");
+              }
+
+              // Try to add a circle
+              if (hiderId) {
+                addCircle(element, hiderId);
+              }
+            }
           } catch (e) {
             console.log(e);
           }
@@ -270,23 +318,21 @@ function execSettings(settings) {
         turnOffObserver = true;
       }
       // Circle add function
-      function addCircle(element) {
+      function addCircle(element, hiderId) {
         var existingCircles = document.getElementsByClassName(
           "circle-container"
         );
         if (existingCircles.length > 0) {
           for (var i = 0; i < existingCircles.length; i++) {
             if (existingCircles[i].parentNode === element) {
-              // We've found that there is a circle with parent with id that matches
-              // FIXME: should work for classes too?
-              // console.log(`Circle already exists in ${elementId}`);
+              // We've found that there is a circle with parent that is our current element
               return;
             }
           }
         }
         try {
           appendHtml(element, tempStorage["circle.html"]);
-          clickHandler(element, domain);
+          clickHandler(element, domain, hiderId);
           // console.log(`Added circle in ${elementId}`);
         } catch (e) {
           // console.log(e);
@@ -297,14 +343,23 @@ function execSettings(settings) {
 }
 
 function makeUniqueSelector(element) {
+  console.log(element);
+  console.log(element.id);
+  console.log(element.parentNode.id);
+  console.log(element.parentNode.parentNode.id);
   var selector = false;
+
   if (element.id === "") {
     if (element.parentNode.id === "") {
       if (element.parentNode.parentNode.id === "") {
-        selector = `#${element.parentNode.parentNode.id}` + element.className.replace(/(^|\s+)/g, "$1.").replace(/\s/g, "");
+        selector =
+          `#${element.parentNode.parentNode.id}` +
+          element.className.replace(/(^|\s+)/g, "$1.").replace(/\s/g, "");
       }
     } else {
-      selector = `#${element.parentNode.id}` + element.className.replace(/(^|\s+)/g, "$1.").replace(/\s/g, "");
+      selector =
+        `#${element.parentNode.id}` +
+        element.className.replace(/(^|\s+)/g, "$1.").replace(/\s/g, "");
     }
   } else {
     selector = `#${element.id}`;
@@ -312,7 +367,7 @@ function makeUniqueSelector(element) {
   return selector;
 }
 
-function clickHandler(element, domain) {
+function clickHandler(element, domain, hiderId) {
   function findElementWithParent(className, clickCallback) {
     var elements = document.getElementsByClassName(className);
     for (var i = 0; i < elements.length; i++) {
@@ -364,16 +419,20 @@ function clickHandler(element, domain) {
         }
       }
   });
-  
-  // New Reset Page
-  findElementWithParent("circle-reset-settings", function(container) {
+  findElementWithParent("circle-reset-settings", function (container) {
     resetPage();
   });
-  
+  function resetPage() {
+    for (var i = 0; i < divs[domain].length; i++) {
+      if (!divs[domain][i].hidden) {
+        divs[domain][i].hidden = true;
+        changeSettingRequest(divs, "divs");
+      }
+    }
+  }
   function unHide(container, element, showAlways) {
     deleteEl(container);
-    var selector = makeUniqueSelector(element);
-    var hideStyle = el(`${selector}-hide-style`);
+    var hideStyle = el(hiderId);
     deleteEl(hideStyle);
     for (var j = 0; j < divs[domain].length; j++) {
       var found = false;
@@ -394,36 +453,24 @@ function clickHandler(element, domain) {
       }
     }
   }
-  
-  function resetPage() {
-    for (var i = 0; i < divs[domain].length; i++ ) {
-      if (!divs[domain][i].hidden) {
-        divs[domain][i].hidden = true;
-        makeSure = 0;
-        changeSettingRequest(divs, "divs");
-      }
-    }
-  }
 }
 
 function keepAddingCircles(callback) {
   var observer = new MutationObserver(function(mutations) {
-    mutations.forEach(function(mutation) {
-      for (var i = 0; i < mutation.addedNodes.length; i++) {
-        callback();
-        if (turnOffObserver) {
-          // console.log("Disconnected observer");
-          observer.disconnect();
-        }
-      }
+    mutations.forEach(function() {
+      callback();
+      // if (turnOffObserver) {
+      //   // console.log("Disconnected observer");
+      //   observer.disconnect();
+      // }
     });
   });
 
   observer.observe(document, {
-    childList: true,
+    childList: false,
     subtree: true,
-    attributes: false,
-    characterData: false
+    characterData: false,
+    attributeFilter: ["class", "id", "data-module"]
   });
 }
 

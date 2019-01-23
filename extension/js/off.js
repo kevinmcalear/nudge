@@ -171,7 +171,7 @@ function sliderdown(e) {
   // Find where the button is
   var buttonDiff = getPageLeft(button) - getPageLeft(slider);
   // Set button position as where button is relative to slider
-  // Set to zero if you have a negatcentre.classList.remove("active");ive value 0)
+  // Set to zero if you have a negative value
   if (buttonDiff > 0) {
     buttonPosition = Math.round(buttonDiff);
   } else {
@@ -189,7 +189,7 @@ function sliderTouchdown(e) {
   // Find where the button is
   var buttonDiff = getPageLeft(button) - getPageLeft(slider);
   // Set button position as where button is relative to slider
-  // Set to zero if you have a negatcentre.classList.remove("active");ive value 0)
+  // Set to zero if you have a negative value
   if (buttonDiff > 0) {
     buttonPosition = Math.round(buttonDiff);
   } else {
@@ -216,17 +216,7 @@ function sliderup(e) {
   document.removeEventListener("mousemove", slidermove, true);
   document.removeEventListener("mouseup", sliderup, true);
   // Initiate on
-  // console.log('position', position);
-
-  // console.log('sliderOffset', slider.offsetWidth);
-  
-  // console.log('buttonOffset', button.offsetWidth);
-  
-  // console.log('diff', (slider.offsetWidth - button.offsetWidth));
-  
-  // console.log('initOn', 'position >= slider.offsetWidth - button.offsetWidth');
-
-  if ( Math.round(position) >= slider.offsetWidth - button.offsetWidth) {
+  if (Math.round(position) >= slider.offsetWidth - button.offsetWidth) {
     initOn();
   } else {
     if (stickyMultiplier === 1) {
@@ -238,7 +228,6 @@ function sliderup(e) {
 }
 
 function sliderupTouch(e) {
-
   // Position for testing whether to initOn, or return
   var position = getPageLeft(button) - getPageLeft(slider);
   button.classList.remove("active");
@@ -248,8 +237,7 @@ function sliderupTouch(e) {
   document.removeEventListener("touchend", sliderupTouch, true);
 
   // Initiate on
-
-  if ( Math.round(position) >= slider.offsetWidth - button.offsetWidth) {
+  if (Math.round(position) >= slider.offsetWidth - button.offsetWidth) {
     initOn();
   } else {
     if (stickyMultiplier === 1) {
