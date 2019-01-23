@@ -342,7 +342,7 @@ function clickHandler(element, domain) {
           showAlwaysClickedAlready = false;
           makeSure = 0;
           setTimeout(() => {
-            document.querySelector('.circle-container.hidden').firstChild.firstChild.firstChild.childNodes[2].textContent = "Show Always"
+            document.querySelector('.circle-container.hidden').firstChild.firstChild.firstChild.childNodes[2].textContent = "Show Always";
           }, 200);
         }, true);
     
@@ -351,7 +351,7 @@ function clickHandler(element, domain) {
         }
       }
       else {
-        document.querySelector('.circle-show-always').textContent = "Are you sure?"
+        document.querySelector('.circle-show-always').textContent = "Are you sure?";
 
         makeSure += 1;
         
@@ -359,7 +359,7 @@ function clickHandler(element, domain) {
           showAlwaysClickedAlready = false;
           makeSure = 0;
           setTimeout(() => {
-            document.querySelector('.circle-show-always').textContent = "Show Always"
+            document.querySelector('.circle-show-always').textContent = "Show Always";
           }, 200);
         }, true);
     
